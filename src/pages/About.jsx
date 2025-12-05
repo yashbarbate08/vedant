@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Footer from "../components/Footer";
-import about from "../assets/products/hair-serum.jpg";
+import about from "../assets/images/logo.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -96,7 +96,7 @@ const About = () => {
               <img
                 src={about}
                 alt="product"
-                className="w-full h-80 object-cover"
+                className="w-full h-full object-cover"
               />
             </div>
 

@@ -1,3 +1,4 @@
+// Home.jsx
 import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import gsap from "gsap";
@@ -157,45 +158,157 @@ const Home = () => {
     };
   }, []);
 
+  // ---------------- HERO SLIDER LOGIC ----------------
+  const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+  const autoplayDelay = 3000; // 3s as requested
+  const autoplayRef = useRef(null);
+
+  const lastIndex = images.length - 1;
+
+  const goTo = (i) => {
+    if (i < 0) setIndex(lastIndex);
+    else if (i > lastIndex) setIndex(0);
+    else setIndex(i);
+  };
+  const next = () => setIndex((prev) => (prev === lastIndex ? 0 : prev + 1));
+  const prev = () => setIndex((prev) => (prev === 0 ? lastIndex : prev - 1));
+
+  // autoplay (controlled with ref so we can clear reliably)
+  useEffect(() => {
+    // clear any existing interval
+    if (autoplayRef.current) clearInterval(autoplayRef.current);
+
+    if (images.length <= 1) return;
+    if (isPaused) return;
+
+    autoplayRef.current = setInterval(() => {
+      setIndex((prev) => (prev === lastIndex ? 0 : prev + 1));
+    }, autoplayDelay);
+
+    return () => {
+      if (autoplayRef.current) {
+        clearInterval(autoplayRef.current);
+        autoplayRef.current = null;
+      }
+    };
+  }, [isPaused, images.length, lastIndex]);
+
+  // keyboard support (left/right)
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // intentionally no deps so event is stable
+  }, []);
+
+  // touch handlers
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    if (touchStartX.current == null || touchEndX.current == null) return;
+    const diff = touchStartX.current - touchEndX.current;
+    const threshold = 50;
+    if (diff > threshold) {
+      next();
+    } else if (diff < -threshold) {
+      prev();
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  // prevent image drag causing weird behavior
+  const preventDrag = (e) => e.preventDefault();
+
   return (
     <div className="min-h-screen w-full bg-neutral-50">
       <Navbar />
 
       {/* HERO SLIDER */}
-      <div className="carousel-container -mt-5 h-200">
-        <div className="carousel-track h-200">
+      <section
+        className="carousel-container aspect-[1900/600] w-full overflow-hidden relative"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        aria-roledescription="carousel"
+      >
+        <div
+          className="carousel-track h-full flex transition-transform duration-700 ease-in-out"
+          style={{
+            transform: `translateX(-${index * 100}%)`,
+            willChange: "transform",
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {images.map((src, i) => (
-            <div key={i} className="slide " aria-hidden={i !== 0}>
+            <div key={i} className="slide min-w-full h-full flex-shrink-0 relative">
               <img
                 src={src}
                 alt={`hero-${i}`}
                 className="w-full h-full object-cover block"
+                draggable={false}
+                onDragStart={preventDrag}
               />
             </div>
           ))}
         </div>
-      </div>
+
+        {/* Prev / Next buttons */}
+        <button
+          onClick={prev}
+          aria-label="Previous slide"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow hover:scale-105 transition"
+        >
+          ‹
+        </button>
+        <button
+          onClick={next}
+          aria-label="Next slide"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow hover:scale-105 transition"
+        >
+          ›
+        </button>
+
+        {/* Dots */}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-6 flex gap-3">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`w-3 h-3 rounded-full ${i === index ? "bg-emerald-700" : "bg-white/80"} border border-neutral-300`}
+            />
+          ))}
+        </div>
+      </section>
 
       {/* PRODUCT GRID */}
       <section className="max-w-7xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold text-emerald-800 mb-6">
-          Our Products
-        </h2>
+        <h2 className="text-3xl font-bold text-emerald-800 mb-6">Our Products</h2>
 
-        <div
-          ref={gridRef}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"
-        >
+        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {products.map((p, i) => (
             <article
               key={p.title + i}
               className="prod-card bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition-shadow"
             >
-              <div className="h-64 md:h-72 overflow-hidden relative">
+              {/* IMAGE CONTAINER */}
+              <div className="h-64 md:h-72 overflow-hidden relative bg-white flex items-center justify-center">
                 <img
                   src={p.img}
                   alt={p.title}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-contain p-2 transition-transform duration-500 hover:scale-105"
                 />
 
                 <button
@@ -207,10 +320,9 @@ const Home = () => {
                 </button>
               </div>
 
+              {/* CONTENT */}
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-emerald-700">
-                  {p.title}
-                </h3>
+                <h3 className="text-lg font-semibold text-emerald-700">{p.title}</h3>
 
                 <p className="text-neutral-800 font-bold mt-1">{p.price}</p>
 
@@ -244,15 +356,9 @@ const Home = () => {
               ×
             </button>
 
-            <img
-              src={modalData.img}
-              alt={modalData.title}
-              className="w-full h-56 object-cover rounded-lg"
-            />
+            <img src={modalData.img} alt={modalData.title} className="w-full h-56 object-cover rounded-lg" />
 
-            <h3 className="text-2xl font-semibold text-emerald-700 mt-4">
-              {modalData.title}
-            </h3>
+            <h3 className="text-2xl font-semibold text-emerald-700 mt-4">{modalData.title}</h3>
 
             <p className="text-neutral-600 mt-2">{modalData.description}</p>
 
@@ -266,37 +372,9 @@ const Home = () => {
         </div>
       )}
 
-      {/* INLINE CSS */}
+      {/* small inline CSS for product card fix (keeps prod-card visible) */}
       <style>{`
-        .prod-card { opacity: 1 !important; } /* prevent faded look */
-
-        .carousel-container {
-          width: 100%;
-          height: 50vh;
-          overflow: hidden;
-          position: relative;
-        }
-
-        .carousel-track {
-          display: flex;
-          height: 100%;
-          animation: slideLoop 12s infinite ease-in-out;
-        }
-
-        .slide {
-          width: 100%;
-          flex-shrink: 0;
-        }
-
-        @keyframes slideLoop {
-          0% { transform: translateX(0); }
-          30% { transform: translateX(0); }
-          33% { transform: translateX(-100%); }
-          63% { transform: translateX(-100%); }
-          66% { transform: translateX(-200%); }
-          96% { transform: translateX(-200%); }
-          100% { transform: translateX(0); }
-        }
+        .prod-card { opacity: 1 !important; }
       `}</style>
 
       <Footer />

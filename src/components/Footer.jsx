@@ -31,28 +31,13 @@ export default function Footer() {
         <div>
           <h4 className="text-lg font-semibold text-emerald-700 mb-4">Support</h4>
           <ul className="space-y-2 text-sm">
-            <li>Email: support@naturalindustries.com</li>
-            <li>Phone: +91 98765 43210</li>
+            <li>Email: naturalindustries@gmail.com</li>
+            <li>Phone: +91 9•••••••5</li>
             <li>Mon–Sat: 9AM – 7PM</li>
             <li><a href="#" className="hover:text-emerald-600">FAQs</a></li>
           </ul>
 
-          {/* Your Personal Info */}
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold text-emerald-700 mb-2">Owner Contact</h4>
-            <ul className="space-y-1 text-sm">
-              <li>Name: <span className="font-medium text-slate-700">Vedant Barbate</span></li>
-              <li>Phone: <span className="font-medium text-slate-700">+91 99231 21530</span></li>
-              <li>Email: 
-                <a
-                  href="mailto:vedantbarbate@gmail.com"
-                  className="font-medium text-emerald-700 hover:underline"
-                >
-                  vedantbarbate@gmail.com
-                </a>
-              </li>
-            </ul>
-          </div>
+         
         </div>
 
         {/* Newsletter */}

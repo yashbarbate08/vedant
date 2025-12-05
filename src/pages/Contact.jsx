@@ -315,7 +315,7 @@ const Contact = () => {
               </div>
 
               {/* Owner contact card */}
-              <div className="mt-6 p-4 border border-neutral-100 rounded-lg bg-amber-50">
+              {/* <div className="mt-6 p-4 border border-neutral-100 rounded-lg bg-amber-50">
                 <h4 className="text-sm font-semibold text-amber-800">Product Owner</h4>
                 <div className="mt-2 text-sm text-neutral-700">
                   <div><strong>{owner.name}</strong></div>
@@ -362,7 +362,7 @@ const Contact = () => {
                     Clicking WhatsApp opens a new tab to message the owner directly.
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="mt-4 text-xs text-neutral-500">
                 <strong>Address:</strong> Manufacturing & HQ — Nagpur, India
