@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "../assets/Images/logo.png";
+// import logo from "../assets/Images/logo.png";
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const { pathname } = useLocation();
@@ -15,7 +16,6 @@ const Navbar = () => {
   return (
     <nav className="w-full bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        
         {/* LOGO / BRAND */}
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Logo" className="w-10 h-10 rounded-full" />
@@ -39,9 +39,11 @@ const Navbar = () => {
                 className={`text-lg relative transition ${isActive(route)}`}
               >
                 {labels[i]}
-                <span className={`absolute left-0 bottom-0 h-[2px] bg-emerald-600 transition-all duration-300
+                <span
+                  className={`absolute left-0 bottom-0 h-[2px] bg-emerald-600 transition-all duration-300
                   ${pathname === route ? "w-full" : "w-0 group-hover:w-full"}
-                `}/>
+                `}
+                />
               </Link>
             );
           })}
