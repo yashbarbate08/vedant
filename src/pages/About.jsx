@@ -3,7 +3,9 @@ import Navbar from "../components/Navbar";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Footer from "../components/Footer";
-import about from "../assets/images/logo.png";
+// About.jsx
+import logo from "../assets/Images/logo.png";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -94,7 +96,7 @@ const About = () => {
           <div className="hero-item relative">
             <div className="rounded-2xl overflow-hidden shadow-lg bg-white">
               <img
-                src={about}
+                src={logo}
                 alt="product"
                 className="w-full h-full object-cover"
               />
